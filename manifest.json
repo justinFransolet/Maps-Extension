@@ -25,7 +25,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.google.com/search?q=*"],
+      "matches": ["https://www.google.com/search?*q=*"],
       "js": ["libs/content.js"]
     }
   ]
