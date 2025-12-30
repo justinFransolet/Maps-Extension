@@ -9,6 +9,53 @@ chrome.runtime.onMessage.addListener((message,sender, sendResponse) => {
 });
 
 /**
+ * Get the therms of the Google search query from URL.
+ * @returns {string} The search query.
+ */
+const get_search_query = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("q");
+}
+
+/**
+ * Get the multitool bar element from Google search results page.
+ * @returns {Element} The multitool bar element.
+ */
+const get_multitool_bar = () => {
+    const navBar = document.querySelector("div[jsname='s2gQvd']");
+    return navBar.querySelector("div[role='list']");
+}
+
+/**
+ * Create a new Maps button element.
+ * @returns {HTMLDivElement} The Maps button element.
+ */
+const create_maps_button = (q_params) => {
+    const listItem = document.createElement("div");
+    listItem.setAttribute("role", "listitem");
+
+    const link = document.createElement("a");
+    link.setAttribute("role", "link");
+    link.className = "C6AK7c";
+    link.href = `https://www.google.com/maps/search/${q_params}`;
+
+    const div = document.createElement("div");
+    div.className = "mXwfNd";
+
+    const span = document.createElement("span");
+    span.className = "R1QWuf";
+    span.textContent = "Maps";
+
+    div.appendChild(span);
+
+    link.appendChild(div);
+
+    listItem.appendChild(link);
+
+    return listItem;
+}
+
+/**
  * Script to add a "Maps" button to the Google search results page.
  */
 const run =  () => {
@@ -17,30 +64,13 @@ const run =  () => {
     if (status !== "active") return;
 
     // Get google search query from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const q_params = urlParams.get("q");
+    const q_params = get_search_query()
 
     // Create new Maps button in navigation bar
-    const navBar = document.querySelector(".qogDvd");
-    const multitoolBar = navBar.querySelector(".crJ18e");
-    const displayList = multitoolBar.querySelector("div[role='list']");
+    const displayList = get_multitool_bar()
 
-    if (navBar && multitoolBar && displayList) {
-        const listItem = document.createElement("div");
-        listItem.setAttribute("role", "listitem");
-
-        const link = document.createElement("a");
-        link.setAttribute("role", "link");
-        link.className = "nPDzT T3FoJb";
-        link.href = `https://www.google.com/maps/search/${q_params}`;
-
-        const div = document.createElement("div");
-        div.className = "YmvwI";
-        div.textContent = "Maps";
-
-        link.appendChild(div);
-
-        listItem.appendChild(link);
+    if (q_params && displayList) {
+        const listItem = create_maps_button(q_params)
 
         const existingItem = displayList.children[2];
         if (existingItem) {
